@@ -258,6 +258,12 @@ void Node::startListening(){
     attr.mq_msgsize = MAX_MSG_SIZE;
     attr.mq_curmsgs = 0;
 
+    string logfile = "node";
+	logfile += to_string(id);
+	logfile +=".txt";
+    ofstream myfile (logfile.c_str());
+    myfile.close();
+
     if ((qd_client = mq_open (client_queue_name, O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) {
         perror ("Client: mq_open (client)");
         exit (1);
@@ -275,9 +281,15 @@ void Node::startListening(){
             exit (1);
         }
         // display token received from server
+        myfile.open(logfile.c_str(),ios::app);
 		cout <<"Received";
-					for(int i=0;i<19;i++)
-						printf(" %x", in_buffer[i]);
+		for(int i=0;i<19;i++)
+		{
+			printf(" %x", in_buffer[i]);
+		 	myfile << in_buffer[i];
+		}
+		myfile << "\n";
+		myfile.close();
 					
 		cout<<endl;
 
