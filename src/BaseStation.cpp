@@ -1,4 +1,4 @@
-/******************************************************************************************
+	/******************************************************************************************
 * File Name:
 * Author(s):
 * Desciption:
@@ -59,15 +59,13 @@ void BaseStation::DijkstraComputePaths(vertex_t source,
             vertex_t v = neighbor_iter->target;
             weight_t weight = neighbor_iter->weight;
             weight_t distance_through_u = dist + weight;
-	    if (distance_through_u < min_distance[v]) {
-	        vertex_queue.erase(std::make_pair(min_distance[v], v));
- 
-	        min_distance[v] = distance_through_u;
-	        previous[v] = u;
-	        vertex_queue.insert(std::make_pair(min_distance[v], v));
- 
-	    }
- 
+		    if (distance_through_u < min_distance[v]) 
+		    {
+		        vertex_queue.erase(std::make_pair(min_distance[v], v));
+	 		    min_distance[v] = distance_through_u;
+		        previous[v] = u;
+		        vertex_queue.insert(std::make_pair(min_distance[v], v));
+		    }
         }
     }
 } 
@@ -103,10 +101,8 @@ void BaseStation::sendBroadcast()
 	std::vector<weight_t> min_distance;
     std::vector<vertex_t> previous;
 	adjacency_list_t adjacency_list(V+1);
-	//int whilecount=0;
-    printf ("Server: Hello, World!\n");
-
-    struct mq_attr attr;
+	printf ("BaseStation: Sending Messages!\n");
+	struct mq_attr attr;
 	RcvCmdWaitTime.tv_sec = 0;
     RcvCmdWaitTime.tv_nsec = 250000;
     attr.mq_flags = 0;
@@ -128,25 +124,25 @@ void BaseStation::sendBroadcast()
 	}
 	int fstnodeneighno=looper;
     char in_buffer [MSG_BUFFER_SIZE];
-	packet[0]='#';
-	packet[1]='N';
-	packet[2]='E';
-	packet[3]='I';
-	packet[4]='G';
-	packet[5]='H';
-	packet[6]=0x01;
-	packet[7]=0x24;
-	packet[8]=0x00;
-	packet[9]=0x00;
-	packet[10]=0x00;
-	packet[11]=0x00;
-	packet[12]=0x00;
-	packet[13]=0x00;
-	packet[14]=0x00;
-	packet[15]=0x00;
-	packet[16]='E';
-	packet[17]='O';
-	packet[18]='P';
+	packet[0] = '#';
+	packet[1] = 'N';
+	packet[2] = 'E';
+	packet[3] = 'I';
+	packet[4] = 'G';
+	packet[5] = 'H';
+	packet[6] = 0x01;
+	packet[7] = 0x24;
+	packet[8] = 0x00;
+	packet[9] = 0x00;
+	packet[10] = 0x00;
+	packet[11] = 0x00;
+	packet[12] = 0x00;
+	packet[13] = 0x00;
+	packet[14] = 0x00;
+	packet[15] = 0x00;
+	packet[16] = 'E';
+	packet[17] = 'O';
+	packet[18] = 'P';
 	for(int loop = 0;loop < fstnodeneighno; loop++)
 	{
 		if (mq_send (qd_client[loop], packet, PACKET_SIZE, 0) == -1) 
@@ -194,36 +190,34 @@ void BaseStation::sendBroadcast()
 				list<vertex_t> path = DijkstraGetShortestPathTo(ite, previous);
 				cout << "Path : ";
 				looper=0;
-				for (std::list<int>::const_iterator iterator = path.begin(), end = path.end(); iterator != end; ++iterator) {
+				for (std::list<int>::const_iterator iterator = path.begin(), end = path.end(); iterator != end; ++iterator) 
+				{
 					route[ite-1].node[looper]=*iterator;
 					route[ite-1].node_energy[looper]=0;/*nodeegy[*iterator];*/
 					std::cout << *iterator<<" ";
 					looper++;
 				}
-
-				//copy(path.begin(), path.end(), std::ostream_iterator<vertex_t>(std::cout, " "));
 				cout << std::endl;
-				packet[0]='#';
-				packet[1]='N';
-				packet[2]='E';
-				packet[3]='I';
-				packet[4]='G';
-				packet[5]='H';
-				packet[6]=route[ite-1].node[0];
-				packet[7]=0x24;//route[ite-1].node_energy[0];
-				packet[8]=route[ite-1].node[1];
-				packet[9]=route[ite-1].node_energy[1];
-				packet[10]=route[ite-1].node[2];
-				packet[11]=route[ite-1].node_energy[2];
-				packet[12]=route[ite-1].node[3];
-				packet[13]=route[ite-1].node_energy[3];
-				packet[14]=route[ite-1].node[4];
-				packet[15]=route[ite-1].node_energy[4];
-				packet[16]='E';
-				packet[17]='O';
-				packet[18]='P';
-				cout<<"Hello George"<<endl;
-				for(int j=0;j<19;j++)
+				packet[0] = '#';
+				packet[1] = 'N';
+				packet[2] = 'E';
+				packet[3] = 'I';
+				packet[4] = 'G';
+				packet[5] = 'H';
+				packet[6] = route[ite-1].node[0];
+				packet[7] = 0x24;//route[ite-1].node_energy[0];
+				packet[8] = route[ite-1].node[1];
+				packet[9] = route[ite-1].node_energy[1];
+				packet[10] = route[ite-1].node[2];
+				packet[11] = route[ite-1].node_energy[2];
+				packet[12] = route[ite-1].node[3];
+				packet[13] = route[ite-1].node_energy[3];
+				packet[14] = route[ite-1].node[4];
+				packet[15] = route[ite-1].node_energy[4];
+				packet[16] = 'E';
+				packet[17] = 'O';
+				packet[18] = 'P';
+				for(int j = 0;j < 19; j++)
 				{
 					printf("%x  ",packet[j] );
 				}
@@ -264,7 +258,7 @@ void BaseStation::sendBroadcast()
 				sort(calcnodelist.begin(), calcnodelist.end());
 				ip = unique(calcnodelist.begin(), calcnodelist.end()); 
 				calcnodelist.resize(distance(calcnodelist.begin(), ip));
-				for(auto irt=calcnodelist.begin();irt!=calcnodelist.end();irt++)
+				for(auto irt = calcnodelist.begin(); irt != calcnodelist.end(); irt++)
 				{
 					cout << "Calcnodelist :" <<*irt<<endl;
 				}

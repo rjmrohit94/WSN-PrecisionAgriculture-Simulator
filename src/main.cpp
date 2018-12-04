@@ -28,8 +28,8 @@ using namespace std;
 
 typedef pair<int,int> iPair; 
 struct timespec RcvCmdWaitTime;
-const char nodeid[NUM_NODES]={0x01,0x02,0x03,0x04,0x05,0x06};
-const int nodeegy[NUM_NODES]={0x24,0x34,0x64,0x21,0x45,0x52};
+const char nodeid[NUM_NODES] = {0x01,0x02,0x03,0x04,0x05,0x06};
+const int nodeegy[NUM_NODES] = {0x24,0x34,0x64,0x21,0x45,0x52};
 route_t route[NODE_COUNT];
 
 /******************************************************************************************
@@ -41,12 +41,12 @@ route_t route[NODE_COUNT];
 int last_node_server(char *packet)
 {
     int i;
-    for(i=6;i<16;i++)
+    for(i = 6; i < 16; i++)
     {
-        if(packet[i]==0x00)
+        if(packet[i] == 0x00)
             break;
     }
-    if((packet[i+1]==0x56))
+    if((packet[i+1] == 0x56))
     {
         return packet[i-1];
     }
@@ -86,15 +86,15 @@ int idtoindex(int l, int r, int x) //binary search algorithm
 bool notinandappend(char value, char* neigh)
 {
 	int i;
-	for (i=0;i<100;i++)
+	for (i = 0; i < 100; i++)
 	{
-		if(value==*(neigh))
+		if(value == *(neigh))
 		{
 			return false;
 		}
-		if (*neigh==0x00)
+		if (*neigh == 0x00)
 		{
-			*neigh=value;
+			*neigh = value;
 			break;
 		}
 		neigh++;
@@ -226,37 +226,40 @@ int main()
 {
 
 	Node nodes[NODE_COUNT];
-	int Ver=NUM_NODES;
+	int Ver = NUM_NODES;
 	BaseStation baseStation(Ver);
 	thread nodeListening[NODE_COUNT];
-	for(int i=0;i<NUM_NODES;i++)
+	for(int i = 0;i < NUM_NODES; i++)
     {
-	   	for(int j=0;j<10;j++)
+	   	for(int j = 0;j < 10; j++)
 		{
-			route[i].node[j]=0x00;
-			route[i].node_energy[j]=0x00;
+			route[i].node[j] = 0x00;
+			route[i].node_energy[j] = 0x00;
 		}
-		for(int j=0;j<100;j++)
+		for(int j = 0; j < 100; j++)
 		{
-			route[i].neigh[j]=0x00;
+			route[i].neigh[j] = 0x00;
 		}
     }
-	for(int i=0; i< NODE_COUNT; i++){
+	for(int i = 0; i< NODE_COUNT; i++)
+	{
 		nodes[i].setId(i+1,nodeegy[i]);
 	}
 
 	baseStation.init();
-	for(int i=0; i< NODE_COUNT; i++){
+	for(int i=0; i< NODE_COUNT; i++)
+	{
 		nodes[i].init();
 	}
 	
-	for(int i=0; i< NODE_COUNT; i++){
-		nodeListening[i]= std::thread (&Node::startListening,&nodes[i]);
+	for(int i = 0; i< NODE_COUNT; i++)
+	{
+		nodeListening[i] = std::thread (&Node::startListening,&nodes[i]);
 	
 	}
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	baseStation.sendBroadcast();
-	for(int i=0; i< NODE_COUNT; i++)
+	for(int i = 0; i< NODE_COUNT; i++)
 	{
 		nodeListening[i].join();
 	}
