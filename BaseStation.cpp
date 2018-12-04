@@ -1,14 +1,37 @@
+/******************************************************************************************
+*
+*
+*
+*
+*
+*
+*
+*
+*********************************************************************************************/
+
 #include "BaseStation.h"
 
 extern route_t route[NODE_COUNT];
 extern struct timespec RcvCmdWaitTime;
 
+/******************************************************************************************
+* Function Name :Constructor
+* Description :
+* Parameters :int
+* Return Value: 
+*********************************************************************************************/
 BaseStation::BaseStation(int V) 
 { 
     this->V = V; 
     
 } 
 
+/******************************************************************************************
+* Function Name :DijkstraComputePaths
+* Description :
+* Parameters :
+* Return Value: 
+*********************************************************************************************/
 void BaseStation::DijkstraComputePaths(vertex_t source,
                           const adjacency_list_t &adjacency_list,
                           std::vector<weight_t> &min_distance,
@@ -50,7 +73,13 @@ void BaseStation::DijkstraComputePaths(vertex_t source,
         }
     }
 } 
- 
+
+/******************************************************************************************
+* Function Name :DijkstraGetShortestPathTo
+* Description :
+* Parameters :
+* Return Value: 
+*********************************************************************************************/
 std::list<vertex_t> BaseStation::DijkstraGetShortestPathTo(
     vertex_t vertex, const std::vector<vertex_t> &previous)
 {
@@ -60,6 +89,12 @@ std::list<vertex_t> BaseStation::DijkstraGetShortestPathTo(
     return path;
 }
 
+/******************************************************************************************
+* Function Name :sendBroadcast
+* Description :
+* Parameters :
+* Return Value: 
+*********************************************************************************************/
 void BaseStation::sendBroadcast()
 {
  	mqd_t qd_client[MAX_NEIGHBORS],qd_cliafloop;   // queue descriptors
@@ -265,6 +300,13 @@ void BaseStation::sendBroadcast()
 	}
 }
 
+
+/******************************************************************************************
+* Function Name :init
+* Description :
+* Parameters :
+* Return Value: 
+*********************************************************************************************/
 int BaseStation::init()
 {
 	

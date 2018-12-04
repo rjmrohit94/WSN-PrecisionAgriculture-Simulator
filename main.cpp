@@ -1,3 +1,14 @@
+/******************************************************************************************
+*
+*
+*
+*
+*
+*
+*
+*
+*********************************************************************************************/
+
 #include <iostream> 
 #include <thread> 
 #include <chrono>
@@ -22,7 +33,12 @@ const char nodeid[NUM_NODES]={0x01,0x02,0x03,0x04,0x05,0x06};
 const int nodeegy[NUM_NODES]={0x24,0x34,0x64,0x21,0x45,0x52};
 route_t route[NODE_COUNT];
 
-
+/******************************************************************************************
+* Function Name :last_node_server
+* Description :
+* Parameters :char *
+* Return Value: int
+*********************************************************************************************/
 int last_node_server(char *packet)
 {
     int i;
@@ -38,6 +54,12 @@ int last_node_server(char *packet)
     return 0;
 }
 
+/******************************************************************************************
+* Function Name :idtoindex
+* Description :
+* Parameters :int l,int r, int x
+* Return Value: int
+*********************************************************************************************/
 int idtoindex(int l, int r, int x) //binary search algorithm
 { 
    if (r >= l) 
@@ -56,6 +78,12 @@ int idtoindex(int l, int r, int x) //binary search algorithm
    return -1; 
 } 
 
+/******************************************************************************************
+* Function Name :notinandappend
+* Description :
+* Parameters :char, char *
+* Return Value: bool
+*********************************************************************************************/
 bool notinandappend(char value, char* neigh)
 {
 	int i;
@@ -75,6 +103,12 @@ bool notinandappend(char value, char* neigh)
 	return true;
 }
 
+/******************************************************************************************
+* Function Name :sortascending
+* Description :
+* Parameters :char*
+* Return Value: void
+*********************************************************************************************/
 void sortascending(char* neigh)
 {
 	int i,j,n;
@@ -101,6 +135,12 @@ void sortascending(char* neigh)
 	
 }
 
+/******************************************************************************************
+* Function Name :waitfornack
+* Description :
+* Parameters :char*
+* Return Value: bool
+*********************************************************************************************/
 bool waitfornack(char* ptr)
 {
 	int flag=0,i,j;
@@ -129,7 +169,12 @@ bool waitfornack(char* ptr)
     return false;
 }
 
-
+/******************************************************************************************
+* Function Name :getNeighbours
+* Description :
+* Parameters :int
+* Return Value: list<int> 
+*********************************************************************************************/
 list<int> getNeighbours(int nodeNumber)
 {
 	list<int> neighbours;
@@ -172,7 +217,12 @@ list<int> getNeighbours(int nodeNumber)
 	}
 	return neighbours;
 }
-
+/******************************************************************************************
+* Function Name :main
+* Description :
+* Parameters :int
+* Return Value: 
+*********************************************************************************************/
 int main() 
 {
 

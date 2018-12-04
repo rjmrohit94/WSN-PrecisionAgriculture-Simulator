@@ -1,7 +1,24 @@
+/******************************************************************************************
+*
+*
+*
+*
+*
+*
+*
+*
+*********************************************************************************************/
+
 #include "Node.h"
 
 extern struct timespec RcvCmdWaitTime;
 
+/******************************************************************************************
+* Function Name :last_node
+* Description :
+* Parameters :char *
+* Return Value: bool 
+*********************************************************************************************/
 bool Node::last_node(char *packet)
 {
     int i;
@@ -17,6 +34,12 @@ bool Node::last_node(char *packet)
     return false;
 }
 
+/******************************************************************************************
+* Function Name :node_in_packet
+* Description :
+* Parameters :char *, int *
+* Return Value: bool 
+*********************************************************************************************/
 bool Node::node_in_packet(char *packet, int *locat)
 {
     int i;
@@ -31,6 +54,12 @@ bool Node::node_in_packet(char *packet, int *locat)
     return false;
 }
 
+/******************************************************************************************
+* Function Name :packet_arrange_sync
+* Description :
+* Parameters :char *
+* Return Value: void 
+*********************************************************************************************/
 void Node::packet_arrange_sync(char *packet)
 {
     int i,j;
@@ -54,6 +83,12 @@ void Node::packet_arrange_sync(char *packet)
         packet[j]=0x56;
 }
 
+/******************************************************************************************
+* Function Name :find_neighbor
+* Description :
+* Parameters :char *
+* Return Value: char *
+*********************************************************************************************/
 char* Node::find_neighbor(char *packet)
 {
     int i,loc=0;
@@ -75,7 +110,12 @@ char* Node::find_neighbor(char *packet)
     return NULL;
 //location1:;
 }
-
+/******************************************************************************************
+* Function Name :ack_neighbor
+* Description :
+* Parameters :char *
+* Return Value: char *
+*********************************************************************************************/
 char* Node::ack_neighbor(char *packet)
 {
     int i,loc=0;
@@ -89,12 +129,26 @@ char* Node::ack_neighbor(char *packet)
     }
     return NULL;
 }
-
+/******************************************************************************************
+* Function Name :init
+* Description :
+* Parameters :void
+* Return Value: int
+*********************************************************************************************/
 int Node::init()
 {
+    /* TBD*/
+    return 0;
 }
 
-void Node::startListening(){
+/******************************************************************************************
+* Function Name :startListening
+* Description :
+* Parameters :void
+* Return Value: void
+*********************************************************************************************/
+void Node::startListening()
+{
     char client_queue_name [64];
     char *packet;
     mqd_t qd_client,qd_forward;   
@@ -117,12 +171,15 @@ void Node::startListening(){
 
     char temp_buf [10];
 
-    while (1) {
-        if ((qd_client = mq_open (client_queue_name, O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) {
-        perror ("Client: mq_open (client)");
-        exit (1);
+    while (1) 
+    {
+        if ((qd_client = mq_open (client_queue_name, O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) 
+        {
+            perror ("Client: mq_open (client)");
+            exit (1);
         }
-        if (mq_receive (qd_client, in_buffer, MSG_BUFFER_SIZE, NULL) == -1) {
+        if (mq_receive (qd_client, in_buffer, MSG_BUFFER_SIZE, NULL) == -1) 
+        {
             perror ("Client: mq_receive");
             exit (1);
         }
@@ -151,25 +208,30 @@ void Node::startListening(){
                     {
                         messageQueueRcv = "/nodeclient-";
                         messageQueueRcv+=to_string(*it);
-                        if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_WRONLY)) == -1) {
-                        perror ("Forward: mq_open (qdforward)");
-                        continue;
+                        if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_WRONLY)) == -1) 
+                        {
+                         perror ("Forward: mq_open (qdforward)");
+                         continue;
                         }
-                        if (mq_timedsend (qd_forward, packet, PACKET_SIZE, 0, &RcvCmdWaitTime) == -1) {
+                        if (mq_timedsend (qd_forward, packet, PACKET_SIZE, 0, &RcvCmdWaitTime) == -1) 
+                        {
                             perror ("Forward: Not able to send message to client");
                             mq_close(qd_forward);
                             char temp='&';
                             while(temp=='&')
                             {
                                 temp='*';
-                                if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) {
-                                perror ("Forward: mq_open (qdforward)");
-                                continue;
+                                if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) 
+                                {
+                                    perror ("Forward: mq_open (qdforward)");
+                                    continue;
                                 }
-                                if (mq_timedreceive (qd_forward, in_buffer, MSG_BUFFER_SIZE, 0,&RcvCmdWaitTime) == -1) {
+                                if (mq_timedreceive (qd_forward, in_buffer, MSG_BUFFER_SIZE, 0,&RcvCmdWaitTime) == -1) 
+                                {
                                     perror ("forward: Not able to receive message from client");
                                 }
-                                else{
+                                else
+                                {
                                     temp='&';
                                 }
                                 mq_close(qd_forward);
@@ -192,26 +254,31 @@ void Node::startListening(){
                     {
                         messageQueueRcv = "/nodeclient-";
                         messageQueueRcv+=to_string(*it);
-                        if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_WRONLY)) == -1) {
-                        perror ("Forward: mq_open (qdforward)");
-                        continue;
+                        if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_WRONLY)) == -1) 
+                        {
+                            perror ("Forward: mq_open (qdforward)");
+                            continue;
                         }
                         //cout << "opened message queue forward: " <<messageQueueRcv.c_str()<<endl;
-                        if (mq_timedsend (qd_forward, packet, PACKET_SIZE, 0,&RcvCmdWaitTime) == -1) {
+                        if (mq_timedsend (qd_forward, packet, PACKET_SIZE, 0,&RcvCmdWaitTime) == -1) 
+                        {
                             perror ("Forward: Not able to send message to client");
                             mq_close(qd_forward);
                             char temp='&';
                             while(temp=='&')
                             {
                                 temp='*';
-                                if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) {
-                                perror ("Forward: mq_open (qdforward)");
-                                continue;
+                                if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) 
+                                {
+                                    perror ("Forward: mq_open (qdforward)");
+                                    continue;
                                 }
-                                if (mq_timedreceive (qd_forward, in_buffer, MSG_BUFFER_SIZE, 0,&RcvCmdWaitTime) == -1) {
+                                if (mq_timedreceive (qd_forward, in_buffer, MSG_BUFFER_SIZE, 0,&RcvCmdWaitTime) == -1) 
+                                {
                                     perror ("forward: Not able to receive message from client");
                                 }
-                                else{
+                                else
+                                {
                                     temp='&';
                                 }
                                 mq_close(qd_forward);
@@ -230,14 +297,16 @@ void Node::startListening(){
                 //printf("Here\n");
             }
         }
-                                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        if (mq_close (qd_client) == -1) {
-        perror ("Client: mq_close");
-        exit (1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        if (mq_close (qd_client) == -1) 
+        {
+            perror ("Client: mq_close");
+            exit (1);
         }
     }
 
-    if (mq_unlink (client_queue_name) == -1) {
+    if (mq_unlink (client_queue_name) == -1) 
+    {
         perror ("Client: mq_unlink");
         exit (1);
     }
