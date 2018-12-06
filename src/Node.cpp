@@ -131,6 +131,71 @@ char* Node::ack_neighbor(char *packet)
     }
     return NULL;
 }
+bool Node::node_in_packetdata(char *packet, int *locat)
+{
+    int i;
+    for(i=4;i<14;i+=2)
+    {
+        if(packet[i]==id)
+        {
+            *locat=i;
+            return true;
+        }
+    }
+    return false;
+}
+bool Node::last_nodedata(char *packet)
+{
+    int i,loc;
+    if(node_in_packetdata(packet,&loc))
+        if((packet[loc+1]==0x00)&&(packet[loc+2]==0x00))
+        {
+            return true;
+        }
+    return false;
+}
+
+void Node::packet_arrange_data(char *packet)
+{
+    int i,j;
+    char tmp[12],data1='x',data2='z';
+    for(i=4;i<14;i++)
+    {
+        if(packet[i]==id)
+            break;
+    }
+    packet[++i]=energy;
+    for(j=4;j<=i;j+=2)
+    {
+        tmp[j-4]=packet[i-j+3];//node
+        tmp[j-3]=0x00;//energy
+    }
+    for(j=4;j<=i;j++)
+        packet[j]=tmp[j-4];
+    packet[5]=energy;
+    for(j=i+1;j<14;j++)
+        packet[j]=0x56;
+    packet[15]=data1;
+    packet[16]=data2;
+}
+char* Node::data_pack(char *packet)
+{
+    int i,loc=0;
+    if(last_nodedata(packet))
+    {
+        *(packet+1)='D';
+        *(packet+2)='A';
+        *(packet+3)='K';
+        packet_arrange_data(packet);
+        return packet;
+    }
+    if(node_in_packetdata(packet,&loc))
+    {
+        packet[loc+1]=energy;
+        return packet;
+    }
+    return NULL;
+}
 /******************************************************************************************
 * Function Name :init
 * Description :
@@ -195,7 +260,6 @@ void Node::startListening()
         myfile << "\n";
         myfile.close();
                     
-        //cout<<endl;
         if(id!=1)
         {
             if((in_buffer[1]=='N')&&(in_buffer[2]=='E')&&(in_buffer[3]=='I')&&(in_buffer[4]=='G')&&(in_buffer[5]=='H'))
@@ -290,13 +354,64 @@ void Node::startListening()
                     }
                 }
             }
-            else{}
+            else if((in_buffer[1]=='D')&&(in_buffer[2]=='A')&&(in_buffer[3]=='T'))
+            {
+                packet=data_pack(in_buffer);
+                if(packet!=NULL)
+                {
+                    cout<<"Received Data :";
+                    for(int j = 0;j < 19; j++)
+                    {
+                        printf("%x  ",packet[j] );
+                    }
+                    cout<<endl;
+                    neighbours = getNeighbours(id);
+                    list <int> :: iterator it;
+                    
+                    for(it = neighbours.begin(); it != neighbours.end(); ++it)
+                    {
+                        messageQueueRcv = "/nodeclient-";
+                        messageQueueRcv+=to_string(*it);
+                        if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_WRONLY)) == -1) 
+                        {
+                            perror ("Forward: mq_open (qdforward)");
+                            continue;
+                        }
+                        //cout << "opened message queue forward: " <<messageQueueRcv.c_str()<<endl;
+                        if (mq_timedsend (qd_forward, packet, PACKET_SIZE, 0,&RcvCmdWaitTime) == -1) 
+                        {
+                            perror ("Forward: Not able to send message to client");
+                            mq_close(qd_forward);
+                            char temp='&';
+                            while(temp=='&')
+                            {
+                                temp='*';
+                                if ((qd_forward = mq_open (messageQueueRcv.c_str(), O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) 
+                                {
+                                    perror ("Forward: mq_open (qdforward)");
+                                    continue;
+                                }
+                                if (mq_timedreceive (qd_forward, in_buffer, MSG_BUFFER_SIZE, 0,&RcvCmdWaitTime) == -1) 
+                                {
+                                    perror ("forward: Not able to receive message from client");
+                                }
+                                else
+                                {
+                                    temp='&';
+                                }
+                                mq_close(qd_forward);
+                            }
+                        }
+                        mq_close(qd_forward);
+                    }
+                }
+            }
         }
         else
         {
             if(waitfornack(in_buffer))
             {
-                //printf("Here\n");
+
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

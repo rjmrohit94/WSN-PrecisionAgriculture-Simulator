@@ -1,4 +1,4 @@
-	/******************************************************************************************
+/******************************************************************************************
 * File Name:
 * Author(s):
 * Desciption:
@@ -154,146 +154,147 @@ void BaseStation::sendBroadcast()
 	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	iternodelist.push_back(1);
 	set_difference(iternodelist.begin(), iternodelist.end(), calcnodelist.begin(), calcnodelist.end(),inserter(difflist, difflist.begin()));
-    while (1) 
-    {
-		//cout<<"in while :"<<whilecount++<<endl;
-		while(!difflist.empty())
-		{
-			for (auto ite : difflist)
-			{	
-				for(int j=0;route[ite-1].neigh[j]!=0;j++)
-				{
-					adjacency_list[ite].push_back(neighbor(route[ite-1].neigh[j],1));
-					if (find(iternodelist.begin(), iternodelist.end(), route[ite-1].neigh[j]) == iternodelist.end()) {
-						iternodelist.push_back(route[ite-1].neigh[j]);
-					}
+    
+	while(!difflist.empty())
+	{
+		for (auto ite : difflist)
+		{	
+			for(int j=0;route[ite-1].neigh[j]!=0;j++)
+			{
+				adjacency_list[ite].push_back(neighbor(route[ite-1].neigh[j],1));
+				if (find(iternodelist.begin(), iternodelist.end(), route[ite-1].neigh[j]) == iternodelist.end()) {
+					iternodelist.push_back(route[ite-1].neigh[j]);
 				}
-				for (int i=1;i<NUM_NODES;i++)
+			}
+			for (int i=1;i<NUM_NODES;i++)
+			{
+				for(int j=0;route[i].neigh[j]!=0;j++)
 				{
-					for(int j=0;route[i].neigh[j]!=0;j++)
+					if((notinandappend(i+1,route[idtoindex(0,NUM_NODES-1,route[i].neigh[j])].neigh))==true)
 					{
-						if((notinandappend(i+1,route[idtoindex(0,NUM_NODES-1,route[i].neigh[j])].neigh))==true)
-							{
-								sortascending(route[idtoindex(0,NUM_NODES-1,route[i].neigh[j])].neigh);
-							}
+						sortascending(route[idtoindex(0,NUM_NODES-1,route[i].neigh[j])].neigh);
 					}
 				}
-				//cout<<"Element in diff list :"<<ite<<endl;
-				sort(iternodelist.begin(), iternodelist.end());
-				ip = unique(iternodelist.begin(), iternodelist.end()); 
-				iternodelist.resize(distance(iternodelist.begin(), ip));
-				/*for(auto irt=iternodelist.begin();irt!=iternodelist.end();irt++)
-				{
-					cout << "Iterbnid :" <<*irt<<endl;
-				}*/
-				DijkstraComputePaths(1, adjacency_list, min_distance, previous);
-				list<vertex_t> path = DijkstraGetShortestPathTo(ite, previous);
-				cout << "Path : ";
-				looper=0;
-				for (std::list<int>::const_iterator iterator = path.begin(), end = path.end(); iterator != end; ++iterator) 
-				{
-					route[ite-1].node[looper]=*iterator;
-					route[ite-1].node_energy[looper]=0;/*nodeegy[*iterator];*/
-					std::cout << *iterator<<" ";
-					looper++;
-				}
-				cout << std::endl;
-				packet[0] = '#';
-				packet[1] = 'N';
-				packet[2] = 'E';
-				packet[3] = 'I';
-				packet[4] = 'G';
-				packet[5] = 'H';
-				packet[6] = route[ite-1].node[0];
-				packet[7] = 0x24;//route[ite-1].node_energy[0];
-				packet[8] = route[ite-1].node[1];
-				packet[9] = route[ite-1].node_energy[1];
-				packet[10] = route[ite-1].node[2];
-				packet[11] = route[ite-1].node_energy[2];
-				packet[12] = route[ite-1].node[3];
-				packet[13] = route[ite-1].node_energy[3];
-				packet[14] = route[ite-1].node[4];
-				packet[15] = route[ite-1].node_energy[4];
-				packet[16] = 'E';
-				packet[17] = 'O';
-				packet[18] = 'P';
-				for(int j = 0;j < 19; j++)
-				{
-					printf("%x  ",packet[j] );
-				}
-				cout<<endl;
-				for(int loop=0;loop<fstnodeneighno;loop++)
+			}
+			sort(iternodelist.begin(), iternodelist.end());
+			ip = unique(iternodelist.begin(), iternodelist.end()); 
+			iternodelist.resize(distance(iternodelist.begin(), ip));
+			DijkstraComputePaths(1, adjacency_list, min_distance, previous);
+			list<vertex_t> path = DijkstraGetShortestPathTo(ite, previous);
+			cout << "Path : ";
+			looper=0;
+			for (std::list<int>::const_iterator iterator = path.begin(), end = path.end(); iterator != end; ++iterator) 
+			{
+				route[ite-1].node[looper]=*iterator;
+				route[ite-1].node_energy[looper]=0;/*nodeegy[*iterator];*/
+				std::cout << *iterator<<" ";
+				looper++;
+			}
+			cout << std::endl;
+			packet[0] = '#';
+			packet[1] = 'N';
+			packet[2] = 'E';
+			packet[3] = 'I';
+			packet[4] = 'G';
+			packet[5] = 'H';
+			packet[6] = route[ite-1].node[0];
+			packet[7] = 0x24;//route[ite-1].node_energy[0];
+			packet[8] = route[ite-1].node[1];
+			packet[9] = route[ite-1].node_energy[1];
+			packet[10] = route[ite-1].node[2];
+			packet[11] = route[ite-1].node_energy[2];
+			packet[12] = route[ite-1].node[3];
+			packet[13] = route[ite-1].node_energy[3];
+			packet[14] = route[ite-1].node[4];
+			packet[15] = route[ite-1].node_energy[4];
+			packet[16] = 'E';
+			packet[17] = 'O';
+			packet[18] = 'P';
+			/*for(int j = 0;j < 19; j++)
+			{
+				printf("%x  ",packet[j] );
+			}
+			cout<<endl;*/
+			for(int loop=0;loop<fstnodeneighno;loop++)
+			{
 				if (mq_timedsend (qd_client[loop], packet, PACKET_SIZE, 0,&RcvCmdWaitTime) == -1) 
 				{
 					perror ("Server: Not able to send message to client");
 					continue;
 				}
-				
-				std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-				for(int i=0;i<NUM_NODES;i++)
-				{
-					for(int j=0;j<5;j++)
-						{
-							printf("%x  ",route[i].neigh[j] );
-						}
-						cout<<endl;
-				}
-				for(int j=0;route[ite-1].neigh[j]!=0;j++)
-				{
-					adjacency_list[ite].push_back(neighbor(route[ite-1].neigh[j],1));
-					if (find(iternodelist.begin(), iternodelist.end(), route[ite-1].neigh[j]) == iternodelist.end()) 
+			}
+			std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+			/*for(int i=0;i<NUM_NODES;i++)
+			{
+				for(int j=0;j<5;j++)
 					{
-						iternodelist.push_back(route[ite-1].neigh[j]);
+						printf("%x  ",route[i].neigh[j] );
 					}
-				}
-				//cout<<"Element in diff list :"<<ite<<endl;
-				sort(iternodelist.begin(), iternodelist.end());
-				ip = unique(iternodelist.begin(), iternodelist.end()); 
-				iternodelist.resize(distance(iternodelist.begin(), ip));
-				/*for(auto irt=iternodelist.begin();irt!=iternodelist.end();irt++)
-				{
-					cout << "Iterbnid :" <<*irt<<endl;
-				}*/
-				calcnodelist.push_back(ite);
-				sort(calcnodelist.begin(), calcnodelist.end());
-				ip = unique(calcnodelist.begin(), calcnodelist.end()); 
-				calcnodelist.resize(distance(calcnodelist.begin(), ip));
-				for(auto irt = calcnodelist.begin(); irt != calcnodelist.end(); irt++)
-				{
-					cout << "Calcnodelist :" <<*irt<<endl;
-				}
-			}
-			while(!difflist.empty())
+					cout<<endl;
+			}*/
+			for(int j=0;route[ite-1].neigh[j]!=0;j++)
 			{
-				difflist.pop_back();
+				adjacency_list[ite].push_back(neighbor(route[ite-1].neigh[j],1));
+				if (find(iternodelist.begin(), iternodelist.end(), route[ite-1].neigh[j]) == iternodelist.end()) 
+				{
+					iternodelist.push_back(route[ite-1].neigh[j]);
+				}
 			}
-			set_difference(iternodelist.begin(), iternodelist.end(), calcnodelist.begin(), calcnodelist.end(),inserter(difflist, difflist.begin()));
+			sort(iternodelist.begin(), iternodelist.end());
+			ip = unique(iternodelist.begin(), iternodelist.end()); 
+			iternodelist.resize(distance(iternodelist.begin(), ip));
+			calcnodelist.push_back(ite);
+			sort(calcnodelist.begin(), calcnodelist.end());
+			ip = unique(calcnodelist.begin(), calcnodelist.end()); 
+			calcnodelist.resize(distance(calcnodelist.begin(), ip));
+			for(auto irt = calcnodelist.begin(); irt != calcnodelist.end(); irt++)
+			{
+				cout << "Calcnodelist :" <<*irt<<endl;
+			}
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(200));
-		/*char temp='&';
-		while(difflist.empty()&& (temp=='&'))
+		while(!difflist.empty())
 		{
-			temp='*';
-			for(int i=1;i<=NUM_NODES;i++)
-			{
-				messageQueueRcv = "/nodeclient-";
-				messageQueueRcv+=to_string(i);
-				if ((qd_cliafloop = mq_open (messageQueueRcv.c_str(), O_RDONLY | O_CREAT, QUEUE_PERMISSIONS, &attr)) == -1) {
-					perror ("after while: mq_open (qdclient)");
-				}
-				if (mq_timedreceive (qd_cliafloop, in_buffer, MSG_BUFFER_SIZE, 0,&RcvCmdWaitTime) == -1) {
-					perror ("after while: Not able to receive message from client");
-					cout<<messageQueueRcv;
-					cout<<" "<<i<<endl;
-				}
-				else{
-					temp='&';
-				}
-				mq_close(qd_cliafloop);
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(20));
+			difflist.pop_back();
 		}
-		*/
+		set_difference(iternodelist.begin(), iternodelist.end(), calcnodelist.begin(), calcnodelist.end(),inserter(difflist, difflist.begin()));
+	}
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	//data sending
+	for(int i=1;i<NUM_NODES;i++)
+	{
+		packet[0] = '#';
+		packet[1] = 'D';
+		packet[2] = 'A';
+		packet[3] = 'T';
+		packet[4] = route[i].node[0];
+		packet[5] = 0x24;
+		packet[6] = route[i].node[1];
+		packet[7] = 0x00;
+		packet[8] = route[i].node[2];
+		packet[9] = route[i].node_energy[2];
+		packet[10] = route[i].node[3];
+		packet[11] = route[i].node_energy[3];
+		packet[12] = route[i].node[4];
+		packet[13] = route[i].node_energy[4];
+		packet[14] = 0x00;
+		packet[15] = 0x00;
+		packet[16] = 'E';
+		packet[17] = 'O';
+		packet[18] = 'P';
+		for(int j = 0;j < 19; j++)
+		{
+			printf("%x  ",packet[j] );
+		}
+		cout<<endl;
+		for(int loop=0;loop<fstnodeneighno;loop++)
+		{
+			if (mq_timedsend (qd_client[loop], packet, PACKET_SIZE, 0,&RcvCmdWaitTime) == -1) 
+			{
+				perror ("Server: Not able to send message to client");
+				continue;
+			}
+		}
+			std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 	}
 }
 

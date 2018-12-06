@@ -44,6 +44,15 @@ public:
 		void packet_arrange_sync(char *packet);
 		char* find_neighbor(char *packet);
 		char* ack_neighbor(char *packet);
+		char* data_pack(char *packet);
+		void packet_arrange_data(char *packet);
+		bool last_nodedata(char *packet);
+		bool node_in_packetdata(char *packet, int *locat);
+
+
+
+
+
 };
 
 #endif
